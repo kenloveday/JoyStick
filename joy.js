@@ -65,9 +65,12 @@ let StickStatus =
  *  internalFillColor {String} (optional) - Internal color of Stick (Default value is '#00AA00')
  *  internalLineWidth {Int} (optional) - Border width of Stick (Default value is 2)
  *  internalStrokeColor {String}(optional) - Border color of Stick (Default value is '#003300')
+ *  internalDrawArrows {Bool} (optional) - Draws X and Y arrows on the centre of the Stick (if axisOnlyX=true only X arrow is draw, if axisOnlyY=true only Y is arrow draw)
  *  externalLineWidth {Int} (optional) - External reference circonference width (Default value is 2)
  *  externalStrokeColor {String} (optional) - External reference circonference color (Default value is '#008000')
  *  autoReturnToCenter {Bool} (optional) - Sets the behavior of the stick, whether or not, it should return to zero position when released (Default value is True and return to zero)
+ *  axisOnlyX {Bool} (optional) - Stick only moves in the X direction, y is set to 0 (ignored if both axisOnlyX and axisOnlyY are set to true)
+ *  axisOnlyY {Bool} (optional) - Stick only moves in the Y direction, x is set to 0 (ignored if both axisOnlyX and axisOnlyY are set to true)
  * @param callback {StickStatus} - 
  */
 var JoyStick = (function(container, parameters, callback)
@@ -79,9 +82,12 @@ var JoyStick = (function(container, parameters, callback)
         internalFillColor = (typeof parameters.internalFillColor === "undefined" ? "#00AA00" : parameters.internalFillColor),
         internalLineWidth = (typeof parameters.internalLineWidth === "undefined" ? 2 : parameters.internalLineWidth),
         internalStrokeColor = (typeof parameters.internalStrokeColor === "undefined" ? "#003300" : parameters.internalStrokeColor),
+        internalDrawArrows = (typeof parameters.internalDrawArrows  === "undefined" ? false : parameters.internalDrawArrows == true),
         externalLineWidth = (typeof parameters.externalLineWidth === "undefined" ? 2 : parameters.externalLineWidth),
         externalStrokeColor = (typeof parameters.externalStrokeColor ===  "undefined" ? "#008000" : parameters.externalStrokeColor),
-        autoReturnToCenter = (typeof parameters.autoReturnToCenter === "undefined" ? true : parameters.autoReturnToCenter);
+        autoReturnToCenter = (typeof parameters.autoReturnToCenter === "undefined" ? true : parameters.autoReturnToCenter),
+        axisOnlyX = (typeof parameters.axisOnlyX === "undefined" ? false : parameters.axisOnlyX == true),
+        axisOnlyY = (typeof parameters.axisOnlyY === "undefined" ? false : parameters.axisOnlyY == true);
 
     callback = callback || function(StickStatus) {};
 
@@ -115,6 +121,13 @@ var JoyStick = (function(container, parameters, callback)
     var movedX=centerX;
     var movedY=centerY;
 
+    // Don't allow axisOnlyX and axisOnlyY to both be set
+    //  as this would mean the stick would not move
+    if(axisOnlyX && axisOnlyY){
+        axisOnlyX = false;
+        axisOnlyY = false;
+    }
+
     // Check if the device support the touch or not
     if("ontouchstart" in document.documentElement)
     {
@@ -131,6 +144,7 @@ var JoyStick = (function(container, parameters, callback)
     // Draw the object
     drawExternal();
     drawInternal();
+    drawInternalArrows();
 
     /******************************************************
      * Private methods
@@ -173,6 +187,81 @@ var JoyStick = (function(container, parameters, callback)
     }
 
     /**
+     * @desc Draw the internal arrows (if required from parameters)
+     */
+    function drawInternalArrows(){
+
+        if(!internalDrawArrows)
+        {
+            return;
+        }
+
+        arrowLength = internalRadius/2; // Make arrow length half stick width
+
+        // Arrow colour and width (for simplicity make same as internal stick)
+        context.strokeStyle = internalStrokeColor; // Arrow colour
+        context.lineWidth = internalLineWidth;     // Arrow line width
+
+        if(!axisOnlyY)
+        {
+            drawArrow(context, movedX - arrowLength, movedY,
+                               movedX + arrowLength, movedY, true);         
+        }
+        if(!axisOnlyX)
+        {
+            drawArrow(context, movedX, movedY - arrowLength,
+                               movedX, movedY + arrowLength, true);
+        }
+    }    
+
+    /**
+     * @desc Draws arrows on canvas
+     */
+    function drawArrow(context, fromX, fromY, toX, toY, doubleHeaded) {
+
+        // Arrow head settings
+        arrowHeadSize = 0.2; // Arrow head size as fraction of arrow length
+        context.lineCap = "round";
+
+        // Calculate arrow head length
+        dx = toX - fromX;
+        dy = toY - fromY;
+        headLength = Math.sqrt(dx*dx + dy*dy) * arrowHeadSize;
+
+        // Draw arrow line
+        context.beginPath();
+        context.moveTo(fromX, fromY);
+        context.lineTo(toX, toY);
+        context.stroke();
+        
+        // Draw arrow head (at end of line)
+        angle = Math.atan2(dy, dx);        
+        context.beginPath();
+        context.moveTo(toX - headLength * Math.cos( angle - Math.PI / 6),
+                       toY - headLength * Math.sin( angle - Math.PI / 6));
+        context.lineTo(toX, toY);
+        context.lineTo(toX - headLength * Math.cos( angle + Math.PI / 6),
+                       toY - headLength * Math.sin( angle + Math.PI / 6));
+        context.stroke();
+
+        // See if we want a double headed arrow 
+        if(!doubleHeaded)
+        {
+            return;
+        }
+
+        // Draw arrow head (at beginning of line)
+        angle = Math.atan2(-dy, -dx);
+        context.beginPath();
+        context.moveTo(fromX - headLength * Math.cos( angle - Math.PI / 6),
+                       fromY - headLength * Math.sin( angle - Math.PI / 6));
+        context.lineTo(fromX, fromY);
+        context.lineTo(fromX - headLength * Math.cos( angle + Math.PI / 6),
+                       fromY - headLength * Math.sin( angle + Math.PI / 6));
+        context.stroke();        
+    }
+
+    /**
      * @desc Events for manage touch
      */
     let touchId = null;
@@ -199,11 +288,22 @@ var JoyStick = (function(container, parameters, callback)
                 movedX -= canvas.offsetParent.offsetLeft;
                 movedY -= canvas.offsetParent.offsetTop;
             }
+            
+            if(axisOnlyY)
+            {
+                movedX = centerX;
+            }
+            if(axisOnlyX)
+            {
+                movedY = centerY;
+            }
+
             // Delete canvas
             context.clearRect(0, 0, canvas.width, canvas.height);
             // Redraw object
             drawExternal();
             drawInternal();
+            drawInternalArrows();
 
             // Set attribute of callback
             StickStatus.xPosition = movedX;
@@ -231,6 +331,7 @@ var JoyStick = (function(container, parameters, callback)
         // Redraw object
         drawExternal();
         drawInternal();
+        drawInternalArrows();
 
         // Set attribute of callback
         StickStatus.xPosition = movedX;
@@ -267,11 +368,22 @@ var JoyStick = (function(container, parameters, callback)
                 movedX -= canvas.offsetParent.offsetLeft;
                 movedY -= canvas.offsetParent.offsetTop;
             }
+            
+            if(axisOnlyY)
+            {
+                movedX = centerX;
+            }
+            if(axisOnlyX)
+            {
+                movedY = centerY;
+            }        
+
             // Delete canvas
             context.clearRect(0, 0, canvas.width, canvas.height);
             // Redraw object
             drawExternal();
             drawInternal();
+            drawInternalArrows();
 
             // Set attribute of callback
             StickStatus.xPosition = movedX;
@@ -297,6 +409,7 @@ var JoyStick = (function(container, parameters, callback)
         // Redraw object
         drawExternal();
         drawInternal();
+        drawInternalArrows();
 
         // Set attribute of callback
         StickStatus.xPosition = movedX;
