@@ -45,7 +45,7 @@
  * SOFTWARE.
  */
 
-let StickStatus =
+var StickStatus =
 {
     xPosition: 0,
     yPosition: 0,
@@ -56,38 +56,38 @@ let StickStatus =
 
 /**
  * @desc Principal object that draw a joystick, you only need to initialize the object and suggest the HTML container
- * @costructor
- * @param container {String} - HTML object that contains the Joystick
+ * @constructor
+ * @param container  {String}   - HTML object that contains the Joystick
  * @param parameters (optional) - object with following keys:
- *  title {String} (optional) - The ID of canvas (Default value is 'joystick')
- *  width {Int} (optional) - The width of canvas, if not specified is setted at width of container object (Default value is the width of container object)
- *  height {Int} (optional) - The height of canvas, if not specified is setted at height of container object (Default value is the height of container object)
- *  internalFillColor {String} (optional) - Internal color of Stick (Default value is '#00AA00')
- *  internalLineWidth {Int} (optional) - Border width of Stick (Default value is 2)
- *  internalStrokeColor {String}(optional) - Border color of Stick (Default value is '#003300')
- *  internalDrawArrows {Bool} (optional) - Draws X and Y arrows on the centre of the Stick (if axisOnlyX=true only X arrow is draw, if axisOnlyY=true only Y is arrow draw)
- *  externalLineWidth {Int} (optional) - External reference circonference width (Default value is 2)
- *  externalStrokeColor {String} (optional) - External reference circonference color (Default value is '#008000')
- *  autoReturnToCenter {Bool} (optional) - Sets the behavior of the stick, whether or not, it should return to zero position when released (Default value is True and return to zero)
- *  axisOnlyX {Bool} (optional) - Stick only moves in the X direction, y is set to 0 (ignored if both axisOnlyX and axisOnlyY are set to true)
- *  axisOnlyY {Bool} (optional) - Stick only moves in the Y direction, x is set to 0 (ignored if both axisOnlyX and axisOnlyY are set to true)
- * @param callback {StickStatus} - 
+ *  title               {String} (optional) - The ID of canvas (Default value is 'joystick')
+ *  width               {Int}    (optional) - The width of canvas, if not specified is set to width of container object (Default value is the width of container object)
+ *  height              {Int}    (optional) - The height of canvas, if not specified is set to height of container object (Default value is the height of container object)
+ *  internalFillColor   {String} (optional) - Internal color of Stick (Default value is '#00AA00')
+ *  internalLineWidth   {Int}    (optional) - Border width of Stick (Default value is 2)
+ *  internalStrokeColor {String} (optional) - Border color of Stick (Default value is '#003300')
+ *  internalDrawArrows  {Bool}   (optional) - Draws X and Y arrows on the centre of the Stick (if axisOnlyX=true only X arrow is draw, if axisOnlyY=true only Y is arrow draw)
+ *  externalLineWidth   {Int}    (optional) - External reference circumference width (Default value is 2)
+ *  externalStrokeColor {String} (optional) - External reference circumference color (Default value is '#008000')
+ *  autoReturnToCenter  {Bool}   (optional) - Sets the behavior of the stick, whether or not, it should return to zero position when released (Default value is True and return to zero)
+ *  axisOnlyX           {Bool}   (optional) - Stick only moves in the X direction, y is set to 0 (ignored if both axisOnlyX and axisOnlyY are set to true)
+ *  axisOnlyY           {Bool}   (optional) - Stick only moves in the Y direction, x is set to 0 (ignored if both axisOnlyX and axisOnlyY are set to true)
+ * @param callback {StickStatus}
  */
 var JoyStick = (function(container, parameters, callback)
 {
     parameters = parameters || {};
-    var title = (typeof parameters.title === "undefined" ? "joystick" : parameters.title),
-        width = (typeof parameters.width === "undefined" ? 0 : parameters.width),
-        height = (typeof parameters.height === "undefined" ? 0 : parameters.height),
-        internalFillColor = (typeof parameters.internalFillColor === "undefined" ? "#00AA00" : parameters.internalFillColor),
-        internalLineWidth = (typeof parameters.internalLineWidth === "undefined" ? 2 : parameters.internalLineWidth),
+    var title               = (typeof parameters.title               === "undefined" ? "joystick"  : parameters.title),
+        width               = (typeof parameters.width               === "undefined" ? 0           : parameters.width),
+        height              = (typeof parameters.height              === "undefined" ? 0           : parameters.height),
+        internalFillColor   = (typeof parameters.internalFillColor   === "undefined" ? "#00AA00" : parameters.internalFillColor),
+        internalLineWidth   = (typeof parameters.internalLineWidth   === "undefined" ? 2           : parameters.internalLineWidth),
         internalStrokeColor = (typeof parameters.internalStrokeColor === "undefined" ? "#003300" : parameters.internalStrokeColor),
-        internalDrawArrows = (typeof parameters.internalDrawArrows  === "undefined" ? false : parameters.internalDrawArrows == true),
-        externalLineWidth = (typeof parameters.externalLineWidth === "undefined" ? 2 : parameters.externalLineWidth),
-        externalStrokeColor = (typeof parameters.externalStrokeColor ===  "undefined" ? "#008000" : parameters.externalStrokeColor),
-        autoReturnToCenter = (typeof parameters.autoReturnToCenter === "undefined" ? true : parameters.autoReturnToCenter),
-        axisOnlyX = (typeof parameters.axisOnlyX === "undefined" ? false : parameters.axisOnlyX == true),
-        axisOnlyY = (typeof parameters.axisOnlyY === "undefined" ? false : parameters.axisOnlyY == true);
+        internalDrawArrows  = (typeof parameters.internalDrawArrows  === "undefined" ? false       : parameters.internalDrawArrows == true),
+        externalLineWidth   = (typeof parameters.externalLineWidth   === "undefined" ? 2           : parameters.externalLineWidth),
+        externalStrokeColor = (typeof parameters.externalStrokeColor === "undefined" ? "#008000" : parameters.externalStrokeColor),
+        autoReturnToCenter  = (typeof parameters.autoReturnToCenter  === "undefined" ? true        : parameters.autoReturnToCenter == true),
+        axisOnlyX           = (typeof parameters.axisOnlyX           === "undefined" ? false       : parameters.axisOnlyX == true),
+        axisOnlyY           = (typeof parameters.axisOnlyY           === "undefined" ? false       : parameters.axisOnlyY == true);
 
     callback = callback || function(StickStatus) {};
 
@@ -264,7 +264,7 @@ var JoyStick = (function(container, parameters, callback)
     /**
      * @desc Events for manage touch
      */
-    let touchId = null;
+    var touchId = null;
     function onTouchStart(event)
     {
         pressed = 1;
@@ -317,7 +317,10 @@ var JoyStick = (function(container, parameters, callback)
 
     function onTouchEnd(event)
     {
-        if (event.changedTouches[0].identifier !== touchId) return;
+        if (event.changedTouches[0].identifier !== touchId)
+        {
+            return;
+        }
 
         pressed = 0;
         // If required reset position store variable
@@ -326,6 +329,7 @@ var JoyStick = (function(container, parameters, callback)
             movedX = centerX;
             movedY = centerY;
         }
+
         // Delete canvas
         context.clearRect(0, 0, canvas.width, canvas.height);
         // Redraw object
@@ -350,7 +354,7 @@ var JoyStick = (function(container, parameters, callback)
         pressed = 1;
     }
 
-    /* To simplify this code there was a new experimental feature here: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/offsetX , but it present only in Mouse case not metod presents in Touch case :-( */
+    // To simplify this code there was a new experimental feature here: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/offsetX, but it present only in Mouse case not method presents in Touch case :-(
     function onMouseMove(event) 
     {
         if(pressed === 1)
@@ -404,6 +408,7 @@ var JoyStick = (function(container, parameters, callback)
             movedX = centerX;
             movedY = centerY;
         }
+
         // Delete canvas
         context.clearRect(0, 0, canvas.width, canvas.height);
         // Redraw object
@@ -422,9 +427,9 @@ var JoyStick = (function(container, parameters, callback)
 
     function getCardinalDirection()
     {
-        let result = "";
-        let orizontal = movedX - centerX;
-        let vertical = movedY - centerY;
+        var result = "";
+        var horizontal = movedX - centerX;
+        var vertical = movedY - centerY;
         
         if(vertical >= directionVerticalLimitNeg && vertical <= directionVerticalLimitPos)
         {
@@ -439,7 +444,7 @@ var JoyStick = (function(container, parameters, callback)
             result = "S";
         }
         
-        if(orizontal < directionHorizontalLimitNeg)
+        if(horizontal < directionHorizontalLimitNeg)
         {
             if(result === "C")
             { 
@@ -450,7 +455,7 @@ var JoyStick = (function(container, parameters, callback)
                 result += "W";
             }
         }
-        if(orizontal > directionHorizontalLimitPos)
+        if(horizontal > directionHorizontalLimitPos)
         {
             if(result === "C")
             { 
@@ -506,7 +511,7 @@ var JoyStick = (function(container, parameters, callback)
     };
 
     /**
-     * @desc Normalizzed value of X move of stick
+     * @desc Normalized value of X move of stick
      * @return Integer from -100 to +100
      */
     this.GetX = function ()
@@ -515,7 +520,7 @@ var JoyStick = (function(container, parameters, callback)
     };
 
     /**
-     * @desc Normalizzed value of Y move of stick
+     * @desc Normalized value of Y move of stick
      * @return Integer from -100 to +100
      */
     this.GetY = function ()

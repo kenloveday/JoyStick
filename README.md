@@ -112,6 +112,7 @@ The ***title*** parameter, that have as default value 'joystick', is used to set
 }
 ```
 The ***axisOnlyX*** and ***axisOnlyY*** parameters can be used to make the stick only move in the X or Y directions.  If using either of these, it is also useful to use the ***internalDrawArrows*** parameter as this will draw an arrow on the stick showing the direction of the allowed (X or Y) movement.  See example ***[joy-axis.html](https://kenloveday.github.io/JoyStick/joy-axis.html)***.
+
 [<img width="780" height="167" alt="joystick-axis" src="https://github.com/user-attachments/assets/91f95516-ed13-4e1a-95b2-1cd71ee8ddb4" />](https://kenloveday.github.io/JoyStick/joy-axis.html)
 
 ## Share your experience
